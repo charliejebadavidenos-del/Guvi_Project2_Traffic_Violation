@@ -1,4 +1,5 @@
 #Creating a Streamlit App with Filters
+#Traffic Violations Insight System: EDA, Cleaning & Interactive Streamlit Dashboard
 
 import streamlit as st
 import mysql.connector
@@ -30,11 +31,11 @@ st.set_page_config(page_title="Traffic Violations Insight System", layout="wide"
 
 # Sidebar for navigation
 st.sidebar.title("Navigation")
-page = st.sidebar.radio("Go to", ["Project Introduction", "Traffic Violation - Filter/Search","Heatmap View",'View summary statistics', "EDA Report","Univariate","Bivariate","Multivariate", "Creator Info"])
+page = st.sidebar.radio("Go to", ["Project Introduction", "Traffic Violation - Filter/Search","Heatmap View",'View summary statistics', "EDA Report","Univariate","Bivariate","Multivariate", "Implementation","Creator Info"])
 
 # -------------------------------- PAGE 1: Introduction --------------------------------
 if page == "Project Introduction":
-    st.title("🌦️ Traffic Violation Analysis")
+    st.title("🚦 Traffic Violation Analysis")
     st.subheader("📊 A Streamlit App for Exploring growing Traffic Trends")
     st.write("""
     This project analyzes weather data from different cities using MySQL database.
@@ -897,6 +898,115 @@ elif page == "Multivariate":
     
     st.pyplot(fig, width='stretch')
 
+
+
+# ---------- PAGE 5: Implementation ----------
+
+elif page == "Implementation":
+    st.set_page_config(layout="wide")
+    st.title("🚦 Traffic Violations Insight System")
+    st.caption("EDA, Data Cleaning & Interactive Streamlit Dashboard")
+    
+    st.divider()
+    
+    # Problem Statement in a nice card
+    with st.container(border=True):
+        st.subheader("📋 Problem Statement")
+        st.markdown("""
+        Urban safety agencies generate **~10 lakh rows** of traffic-violation records yearly, 
+        capturing violation type, location, driver demographics, vehicle info, and enforcement metadata.
+        
+        **Challenge**: Raw data is noisy, inconsistent, duplicated, and hard to interpret without systematic preprocessing.
+        
+        **Goal**: Transform this raw dataset into actionable insights through EDA, data cleaning, 
+        preprocessing, and an interactive visualization dashboard built with Streamlit.
+        """)
+    
+        
+    col1, col2 = st.columns(2)
+    
+    # Business Use Cases
+    with col1:
+        with st.container(border=True):
+            st.subheader("🎯 Business Use Cases")
+            st.markdown("""
+            This project simulates real-world scenarios for:
+            - **DOT & Transport Agencies**: Improve road safety
+            - **Police Departments**: Identify violation hotspots  
+            - **City Safety Teams**: Allocate patrol vehicles efficiently
+            - **Enforcement**: Detect repeat offenders
+            - **Policymakers**: Inform data-driven decisions
+            """)
+    
+    # Data Cleaning steps
+    with col2:
+        with st.container(border=True):
+            st.subheader("🧹 Data Cleaning & Preprocessing")
+            st.markdown("""
+            - ✅ Removed duplicate & inconsistent records
+            - 📅 Standardized date-time formats  
+            - 🏷️ Normalized categorical variables: race, gender, vehicle data, violation codes
+            - 📍 Validated & cleaned geographic coordinates
+            - ❓ Handled missing, invalid, out-of-range values
+            - ⚡ Optimized data types for high-volume datasets
+            - 🔧 Engineered features: violation counts, time-of-day buckets, severity indicators
+            """)
+    
+    st.divider()
+   
+    st.subheader("Traffic Violation - Filter/Search")
+    st.markdown("""
+
+                ●	Filter violations by date, location, vehicle type, gender, race, or violation category
+                
+    """)
+
+    st.subheader("Exploratory Data Analysis")
+    st.markdown("""
+    Univariate - Examine columns one by one to understand their specific data distribution, spread, and target anomalies
+                        
+    Bivariate & Multivariate - Explore the active relationships, dependencies, and core patterns shared between multiple variables
+                
+                Refer to tabs Univariate,Bi-Variate and Multi-variate
+
+    """)
+
+    st.subheader("EDA Report")
+    st.markdown("""
+    There were few questions provided on the project document.The results to the project report is 
+                
+                - Most common violations
+                - Areas or coordinates have the highest traffic incidents
+                - Demographics correlate with specific violation types
+                - Violation frequency vary by time of day, weekday, or month
+                - Types of vehicles / most often involved in violations
+                - How often do violations involve accidents, injuries, or vehicle damage
+    """)
+
+    st.subheader("Summary Statistics")
+    st.markdown("""
+    Based on the year provided and the Agency Statistics has been provided
+                
+                - Total Violations
+                - Accidents Involved
+                - High Risk Zones
+                - Total Number of Zones
+    """)
+
+    st.subheader("Geographical Heatmap of Incident Hotspots")
+    st.markdown("""
+                 This means targeted enforcement in just 10 areas can impact >30% of total violations. For city safety teams,
+                 this data supports predictive policing and optimized patrol allocation."
+                """)
+    
+ 
+    st.subheader("Business Insights and recommendations")
+
+    st.markdown("""
+    - **Hotspot clustering**: Deploy more patrol vehicles + traffic cameras in Rockville/Silver Spring area. ROI will be highest there
+    - **Uneven distribution**: 80/20 rule applies: 20% locations cause 80% violations. Focus enforcement budget on Top 10 areas from your table  
+    - **Resource allocation**: Shift patrol shifts to peak hours + peak zones instead of city-wide coverage. Cuts cost, improves catch rate
+    """)
 
 # ---------- PAGE 5: Creator Info ----------
 elif page == "Creator Info":

@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pydeck as pdk
 import numpy as np
+from sqlalchemy import create_engine
 
 
 # Function to connect to SQLite database
@@ -864,6 +865,72 @@ elif page == "Bivariate":
     # ONLY ONE st.pyplot at the very end
     st.pyplot(g.fig, width='stretch')
 
+    # HAZMAT vs Violation Type vs Arrest Type
+    st.title("HAZMAT vs Violation Type ")
+    st.write("##Top 10 Violations")
+    
+    st.subheader("HAZMAT vs Violation Type Distribution")
+
+    query = """
+    SELECT `Violation Type` AS Violation_Type,HAZMAT, COUNT(*) as total_violations
+    FROM guvi_db.Traffic_Violations
+    GROUP BY `Violation Type`,HAZMAT
+    ORDER BY `Violation Type`,HAZMAT
+    """
+    
+    HAZMAT = get_data(query)
+
+    fig, ax = plt.subplots(figsize=(14,6))
+    sns.barplot(data=HAZMAT, x='Violation_Type', y='HAZMAT', hue='total_violations', ax=ax)
+    ax.set_title("Violations: HAZMAT vs Non-HAZMAT")
+    ax.set_xlabel("Violation Type")
+    ax.set_ylabel("HAZMAT")
+    plt.xticks(rotation=45, ha='right')
+    st.pyplot(fig)
+    
+
+    st.subheader("1. Overall Violations Trend: 2012-2025")
+
+    query = """
+        SELECT YEAR(`Date of Stop`) as year, COUNT(*) as total_violations
+        FROM guvi_db.Traffic_Violations
+        GROUP BY YEAR(`Date of Stop`)
+        ORDER BY year
+    """
+    year_df = get_data(query)
+
+    fig, ax = plt.subplots(figsize=(12,5))
+    ax.plot(year_df['year'], year_df['total_violations'], marker='o', linewidth=3)
+    ax.fill_between(year_df['year'], year_df['total_violations'], alpha=0.2)
+    ax.set_title("Total Violations per Year")
+    ax.set_xlabel("Year")
+    ax.set_ylabel("Count")
+    st.pyplot(fig)
+
+    st.subheader("2. Top 5 Violation Types Trend")
+
+    # First get top 5 violation types overall
+    top5_query = """
+        SELECT `Violation Type`, COUNT(*) as cnt
+        FROM guvi_db.Traffic_Violations
+        GROUP BY `Violation Type`
+        ORDER BY cnt DESC LIMIT 5
+    """
+    top5_df = get_data(top5_query)
+    top5_list = tuple(top5_df['Violation Type'].tolist())
+
+    # Then get yearly trend for just top 5
+    query = f"""
+        SELECT YEAR(`Date of Stop`) as year, `Violation Type`, COUNT(*) as count
+        FROM guvi_db.Traffic_Violations
+        WHERE `Violation Type` IN {top5_list}
+        GROUP BY YEAR(`Date of Stop`), `Violation Type`
+        ORDER BY year
+    """
+    trend_df = get_data(query)
+    pivot_df = trend_df.pivot(index='year', columns='Violation Type', values='count').fillna(0)
+
+    st.line_chart(pivot_df)
 
 # ---------- PAGE 5: Multivariate ----------
 elif page == "Multivariate":

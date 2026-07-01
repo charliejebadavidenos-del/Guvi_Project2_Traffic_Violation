@@ -31,7 +31,7 @@ st.set_page_config(page_title="Traffic Violations Insight System", layout="wide"
 
 # Sidebar for navigation
 st.sidebar.title("Navigation")
-page = st.sidebar.radio("Go to", ["Project Introduction", "Traffic Violation - Filter/Search","Heatmap View",'View summary statistics', "EDA Report","Univariate","Bivariate","Multivariate", "Implementation","Creator Info"])
+page = st.sidebar.radio("Go to", ["Project Introduction", "Traffic Violation - Filter/Search","Geographical Heatmap of Incident Hotspots",'View summary statistics', "EDA Report - Q&A","Univariate","Bivariate","Multivariate", "Implementation","Creator Info"])
 
 # -------------------------------- PAGE 1: Introduction --------------------------------
 if page == "Project Introduction":
@@ -134,47 +134,48 @@ elif page == "Traffic Violation - Filter/Search":
         geos = ["All"] + Geolocation_df['Geolocation'].tolist()
         selected_Geolocation = st.selectbox("Geolocation", geos, key="geo")
     
-    # 3. Build dynamic query - keep this in main area
-    query = """
-        SELECT `Date of Stop`, `Violation Type`, `VehicleType`, `Race`, `Gender`, `Geolocation`
+    
+
+     # 4. Build dynamic query - keep this in main area
+    query1 = """
+        SELECT *
         FROM guvi_db.Traffic_Violations
         WHERE 1=1
     """
     params = []
     
     if selected_violation!= "All":
-        query += " AND `Violation Type` = %s"
+        query1 += " AND `Violation Type` = %s"
         params.append(selected_violation)
     
-    query += " AND DATE(`Date of Stop`) BETWEEN %s AND %s"
+    query1 += " AND DATE(`Date of Stop`) BETWEEN %s AND %s"
     params.extend([str(start_date), str(end_date)])
     
     if selected_vehicle!= "All":
-        query += " AND `VehicleType` = %s"
+        query1 += " AND `VehicleType` = %s"
         params.append(selected_vehicle)
     
     if selected_Race!= "All":
-        query += " AND `Race` = %s"
+        query1 += " AND `Race` = %s"
         params.append(selected_Race)
     
     if selected_Gender!= "All":
-        query += " AND `Gender` = %s"
+        query1 += " AND `Gender` = %s"
         params.append(selected_Gender)
     
     if selected_Geolocation!= "All":
-        query += " AND `Geolocation` = %s"
+        query1 += " AND `Geolocation` = %s"
         params.append(selected_Geolocation)
     
-    query += " LIMIT 10000"
+    query1 += " LIMIT 10000"
     
     # 4. Show results in main area - more space now
-    df = get_data(query, tuple(params))
+    df = get_data(query1, tuple(params))
     if not df.empty:
         st.write(f"Rows found: {len(df)}")
         st.dataframe(df, width="stretch", height=500)
     else:
         st.warning("No data available for selected filters.")
-
 
 # ---------- PAGE 2: Filter violations ----------
 
@@ -279,7 +280,7 @@ elif page == "Filter violations":
 
 # ---------- PAGE 3: Geo-Heatmap View ----------
 
-elif page == "Heatmap View":
+elif page == "Geographical Heatmap of Incident Hotspots":
     st.title("🗺️ Geographical Heatmap of Incident Hotspots")
     
     @st.cache_data
@@ -490,10 +491,10 @@ elif page == "View summary statistics":
         st.warning("No data for selected filters")
 
 
-# ---------- PAGE 3: EDA Report ----------
-elif page == "EDA Report":
+# ---------- PAGE 3: EDA Report - Q&A ----------
+elif page == "EDA Report - Q&A":
 
-    st.set_page_config(page_title="EDA Report", layout="wide")
+    st.set_page_config(page_title="EDA Report - Q&A", layout="wide")
     st.title("📈 EDA Report")
 
     # DB connection function for this page
